@@ -180,24 +180,6 @@ src/suruga_seiki_ew51/
 └── config/         # Configuration management
 ```
 
-### Next Steps for Development
-
-1. **Implement Real Hardware Backend**:
-   - Study `probe-station-api` DLL integration
-   - Implement `src/suruga_seiki_ew51/daemon/backend/real/real_backend.py`
-   - Add pythonnet DLL loading
-
-2. **Add Configuration**:
-   - Implement `src/suruga_seiki_ew51/config/settings.py`
-   - Add stage calibration data structures
-
-3. **Implement Motion Module**:
-   - Add motion primitives in `src/suruga_seiki_ew51/motion/`
-
-4. **Implement Alignment**:
-   - Port alignment logic from `probe-station-api`
-   - Add to `src/suruga_seiki_ew51/alignment/`
-
 ## Troubleshooting
 
 ### Daemon won't start
