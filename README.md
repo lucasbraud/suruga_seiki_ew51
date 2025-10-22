@@ -2,7 +2,7 @@
 
 A modular Python API and daemon service for controlling the **Suruga Seiki EW-51 motion control system**, used for precision positioning in photonics and chip characterization setups.
 
-This project provides clean modularity, clear hardware abstraction, and a split between **daemon (server)** and **SDK (client)** layers for flexible integration.
+This project provides clean modularity, clear hardware abstraction, and a split between **daemon (server)** and **SDK (client)** layers for flexible integration. All necessary DLL files for hardware control are included in the package.
 
 ## Features
 
@@ -13,6 +13,7 @@ This project provides clean modularity, clear hardware abstraction, and a split 
 - **12-Axis Control**: Support for dual 6-axis stages (X, Y, Z, TX, TY, TZ per stage)
 - **Mock Backend**: Full simulation mode for development and testing without hardware
 - **Type Safety**: Full type hints and Pydantic models throughout
+- **Bundled DLLs**: All required hardware control DLLs are included in the package
 
 ## Architecture
 
@@ -31,6 +32,15 @@ src/suruga_seiki_ew51/
 └── utils/               # Common utilities
 ```
 
+## Documentation
+
+- [Quick Start Guide](docs/QUICKSTART.md) - Get up and running quickly
+- [Development Documentation](docs/development/) - Detailed development resources:
+  - [Project Status](docs/development/PROJECT_STATUS.md)
+  - [Analysis Index](docs/development/ANALYSIS_INDEX.md)
+  - [Exploration Report](docs/development/EXPLORATION_REPORT.md)
+  - [Development Notes](docs/development/CLAUDE.md)
+
 ## Installation
 
 ### Development Setup
@@ -40,20 +50,17 @@ src/suruga_seiki_ew51/
 conda create -n suruga python=3.11
 conda activate suruga
 
-# Install in development mode
-pip install -e .[dev]
+# Install in development mode (includes hardware support by default)
+pip install -e "."  # Use quotes to prevent zsh glob expansion
 
-# Install pre-commit hooks
+# For development tools (optional)
+pip install -e ".[dev]"  # Adds testing and code quality tools
+
+# Install pre-commit hooks (recommended for development)
 pre-commit install
 ```
 
-### Hardware Support
-
-To enable real hardware support (requires .NET DLL):
-
-```bash
-pip install -e .[hardware]
-```
+Note: Hardware support (including .NET runtime integration and DLL files) is included by default.
 
 ## Quick Start
 
@@ -68,14 +75,13 @@ suruga-ew51-daemon --mock
 Or start with real hardware:
 
 ```bash
-suruga-ew51-daemon --dll-path /path/to/srgmc.dll
+suruga-ew51-daemon
 ```
 
 Options:
 - `--mock`: Use mock backend (default: False)
 - `--host`: Host to bind to (default: 127.0.0.1)
 - `--port`: Port to bind to (default: 8000)
-- `--dll-path`: Path to srgmc.dll (for real hardware)
 - `--log-level`: Logging level (DEBUG, INFO, WARNING, ERROR)
 - `--reload`: Enable auto-reload for development
 
@@ -146,12 +152,12 @@ ruff check --select I --select D
 
 ## Hardware Integration
 
-The real backend integrates with the Suruga Seiki motion controller via `srgmc.dll` using `pythonnet`.
+The real backend integrates with the Suruga Seiki motion controller using the included DLL files and `pythonnet`.
 
 **Requirements:**
-- Place `srgmc.dll` in `src/suruga_seiki_ew51/io/dll/`
-- Install pythonnet: `pip install pythonnet`
+- Install pythonnet: Included with `.[hardware]` extras
 - Ensure .NET runtime is available on the system
+- All required DLLs are included in the package
 
 **Axis Numbering:**
 - Left stage: 1-6 → X1, Y1, Z1, TX1, TY1, TZ1

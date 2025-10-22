@@ -34,12 +34,6 @@ def main():
     )
 
     parser.add_argument(
-        "--dll-path",
-        type=str,
-        help="Path to srgmc.dll (for real hardware backend)",
-    )
-
-    parser.add_argument(
         "--host",
         type=str,
         default="127.0.0.1",
@@ -81,14 +75,12 @@ def main():
     logger.info(f"Host: {args.host}")
     logger.info(f"Port: {args.port}")
     logger.info(f"Log Level: {args.log_level}")
-    if args.dll_path:
-        logger.info(f"DLL Path: {args.dll_path}")
     logger.info("=" * 60)
 
     # Import and configure the app
     from suruga_seiki_ew51.daemon.app.main import create_app
 
-    app = create_app(use_mock=args.mock, dll_path=args.dll_path)
+    app = create_app(use_mock=args.mock)
 
     # Run the server
     uvicorn.run(

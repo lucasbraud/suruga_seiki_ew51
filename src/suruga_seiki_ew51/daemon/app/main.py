@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from suruga_seiki_ew51 import __version__
 from suruga_seiki_ew51.daemon.daemon import EW51Daemon
 from suruga_seiki_ew51.utils import StationException
+from suruga_seiki_ew51.config import settings
 from suruga_seiki_ew51.daemon.app.routers import (
     daemon_router,
     servo_router,
@@ -56,7 +57,7 @@ async def lifespan(app: FastAPI):
     logger.info("Daemon shutdown complete")
 
 
-def create_app(use_mock: bool = True, dll_path: Optional[str] = None) -> FastAPI:
+def create_app(use_mock: bool = True) -> FastAPI:
     """Create and configure the FastAPI application.
 
     Args:
@@ -75,7 +76,7 @@ def create_app(use_mock: bool = True, dll_path: Optional[str] = None) -> FastAPI
 
     # Store configuration in app state
     app.state.use_mock = use_mock
-    app.state.dll_path = dll_path
+    app.state.dll_path = None if use_mock else settings.SRGMC_DLL_PATH
 
     # Add CORS middleware
     app.add_middleware(

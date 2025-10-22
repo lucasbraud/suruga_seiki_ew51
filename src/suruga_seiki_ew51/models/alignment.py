@@ -69,28 +69,28 @@ class FlatAlignmentParameters(BaseModel):
         True, description="Enable initial range setting"
     )
     pm_init_range: float = Field(
-        -10.0, description="Initial power meter range in dBm"
+        -30.0, description="Initial power meter range in dBm"
     )
 
     field_search_threshold: float = Field(
         0.1, description="Field search threshold in dBm"
     )
     peak_search_threshold: float = Field(
-        40.0, description="Peak search threshold percentage"
+        10.0, description="Peak search threshold percentage"
     )
 
     search_range_x: float = Field(
-        500.0, description="Search range X in micrometers"
+        25.0, description="Search range X in micrometers"
     )
     search_range_y: float = Field(
-        500.0, description="Search range Y in micrometers"
+        25.0, description="Search range Y in micrometers"
     )
 
     field_search_pitch_x: float = Field(
-        5.0, description="Field search pitch X in micrometers"
+        1.0, description="Field search pitch X in micrometers"
     )
     field_search_pitch_y: float = Field(
-        5.0, description="Field search pitch Y in micrometers"
+        1.0, description="Field search pitch Y in micrometers"
     )
     field_search_first_pitch_x: float = Field(
         0.0, description="First pitch X for field search"

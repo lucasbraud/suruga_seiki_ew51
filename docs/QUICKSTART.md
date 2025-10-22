@@ -18,10 +18,10 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ```bash
 # Development installation
-pip install -e .[dev]
+pip install -e ".[dev]"  # Use quotes to prevent zsh glob expansion
 
 # For hardware support (requires .NET runtime)
-pip install -e .[hardware]
+pip install -e ".[hardware]"  # Use quotes to prevent zsh glob expansion
 ```
 
 ### 3. Install Pre-commit Hooks (Optional)
@@ -47,14 +47,14 @@ The daemon will start at `http://localhost:8000`
 ### Real Hardware Mode
 
 ```bash
-# With hardware backend
-suruga-ew51-daemon --dll-path /path/to/srgmc.dll
+# Start with hardware backend
+suruga-ew51-daemon
 
 # Custom host and port
-suruga-ew51-daemon --dll-path /path/to/srgmc.dll --host 0.0.0.0 --port 9000
+suruga-ew51-daemon --host 0.0.0.0 --port 9000
 ```
 
-**Note**: Real hardware backend is not yet implemented. Use mock mode for now.
+The DLL files are included in the package at `suruga_seiki_ew51/io/dll/`, so you don't need to specify their location.
 
 ## Using the API
 
@@ -224,7 +224,7 @@ python -c "from suruga_seiki_ew51 import __version__; print(__version__)"
 
 ```bash
 # Install dev dependencies
-pip install -e .[dev]
+pip install -e ".[dev]"  # Use quotes to prevent zsh glob expansion
 
 # Run with verbose output
 pytest -vv -s
