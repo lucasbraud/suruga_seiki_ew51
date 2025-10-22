@@ -1,0 +1,123 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "suruga-seiki-ew51"
+version = "0.1.0"
+description = "Modular Python API and daemon service for Suruga Seiki EW-51 motion control"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Lucas", email = "lucas@example.com"}
+]
+keywords = ["motion control", "suruga seiki", "ew-51", "probe station", "automation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic>=2.5.0",
+    "httpx>=0.26.0",
+    "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pre-commit>=3.5.0",
+]
+hardware = [
+    "pythonnet>=3.0.0",
+]
+mock = []
+
+[project.scripts]
+suruga-ew51-daemon = "suruga_seiki_ew51.daemon.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/suruga_seiki_ew51"
+Documentation = "https://github.com/yourusername/suruga_seiki_ew51"
+Repository = "https://github.com/yourusername/suruga_seiki_ew51"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+suruga_seiki_ew51 = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+asyncio_mode = "auto"
+markers = [
+    "hardware: tests requiring real hardware (deselect with '-m \"not hardware\"')",
+    "mock: tests using mock backend",
+]
+addopts = [
+    "--strict-markers",
+    "--tb=short",
+    "--cov=suruga_seiki_ew51",
+    "--cov-report=term-missing",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "D",   # pydocstyle
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "D203", # one-blank-line-before-class (incompatible with D211)
+    "D213", # multi-line-summary-second-line (incompatible with D212)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100", "D103"]  # Don't require docstrings in tests
+"__init__.py" = ["D104"]  # Don't require docstrings in __init__.py
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+follow_imports = "normal"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
