@@ -1,5 +1,7 @@
 # Suruga Seiki EW-51 Motion Control API
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+
 A modular Python API and daemon service for controlling the **Suruga Seiki EW-51 motion control system**, used for precision positioning in photonics and chip characterization setups.
 
 This project provides clean modularity, clear hardware abstraction, and a split between **daemon (server)** and **SDK (client)** layers for flexible integration. All necessary DLL files for hardware control are included in the package.
@@ -170,6 +172,8 @@ The real backend integrates with the Suruga Seiki motion controller using the in
 ## License
 
 MIT License
+
+Copyright (c) 2025 Lucas Braud
 
 ## Contributing
 
