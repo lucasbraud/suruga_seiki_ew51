@@ -47,9 +47,6 @@ Thumbs.db
 # Logs
 *.log
 
-# DLL and hardware-specific files
-src/suruga_seiki_ew51/io/dll/*.dll
-
 # Temporary files
 *.tmp
 *.bak
