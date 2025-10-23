@@ -1,6 +1,6 @@
 """Base Pydantic models for API schemas."""
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -72,4 +72,4 @@ class ErrorResponse(BaseModel):
 
     error: str = Field(..., description="Error type or code")
     message: str = Field(..., description="Human-readable error message")
-    details: Optional[Dict[str, any]] = Field(None, description="Additional error details")
+    details: Optional[Dict[str, Any]] = Field(None, description="Additional error details")

@@ -8,7 +8,7 @@ import asyncio
 import logging
 import os
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 from suruga_seiki_ew51.models import AxisId, AxisStatus, StageStatus, StageId
 from suruga_seiki_ew51.utils import (
@@ -37,22 +37,23 @@ class RealBackend(AbstractBackend):
     def __init__(
         self,
         dll_path: Optional[str] = None,
-        ads_address: str = "5.107.162.80.1.1",
+        ads_address: str = "5.146.68.190.1.1",
     ):
         """Initialize real hardware backend.
 
         Args:
-            dll_path: Path to srgmc.dll (if None, looks in io/dll/ directory).
+            dll_path: Path to srgmc.dll (if None, uses default module-level DLL).
             ads_address: ADS network address for the controller.
         """
         super().__init__()
         self._dll_path = dll_path
         self._ads_address = ads_address
         self._system = None
-        self._axis_components: Dict[int, any] = {}
+        self._axis_components: Dict[int, Any] = {}
         self._axis_2d = None
         self._alignment = None
         self._alignment_controller: Optional[AlignmentController] = None
+        self._dll_module = None
 
         # Homing state tracking
         self._is_homed: Dict[AxisId, bool] = {axis: False for axis in AxisId}
@@ -67,41 +68,52 @@ class RealBackend(AbstractBackend):
     def _load_dll(self) -> None:
         """Load the srgmc.dll library via pythonnet.
 
+        This method follows the pattern required by pythonnet:
+        1. Load pythonnet with coreclr runtime
+        2. Add DLL directory to PATH for dependency resolution
+        3. Import clr and add reference to DLL using full path
+        4. Import the .NET namespace
+
         Raises:
             ConnectionError: If DLL cannot be loaded.
         """
         try:
+            # Initialize pythonnet with .NET Core runtime
             import pythonnet
-            import clr
-
-            # Load .NET Core
             pythonnet.load("coreclr")
 
             # Determine DLL path
             if self._dll_path:
                 dll_location = Path(self._dll_path).parent
+                dll_file = Path(self._dll_path)
             else:
                 # Default to io/dll/ directory
-                dll_location = (
-                    Path(__file__).parent.parent.parent / "io" / "dll"
-                )
+                dll_location = Path(__file__).parent.parent.parent / "io" / "dll"
+                dll_file = dll_location / "srgmc.dll"
 
-            if not dll_location.exists():
-                raise ConnectionError(
-                    f"DLL directory not found: {dll_location}"
-                )
+            if not dll_file.exists():
+                raise ConnectionError(f"DLL file not found: {dll_file}")
 
-            # Add DLL reference
-            logger.info(f"Loading DLL from: {dll_location}")
-            os.chdir(dll_location)
-            clr.AddReference("srgmc")
+            # Convert to absolute paths
+            dll_location = dll_location.resolve()
+            dll_file = dll_file.resolve()
 
-            # Import DLL namespace
-            import SurugaSeiki.Motion
+            # Add DLL directory to PATH environment variable
+            # This allows .NET runtime to find dependency DLLs
+            dll_path_str = str(dll_location)
+            os.environ["PATH"] = dll_path_str + os.pathsep + os.environ.get("PATH", "")
+
+            logger.info(f"Loading DLL from: {dll_file}")
+
+            # Import clr and add reference to DLL with full path
+            import clr
+            clr.AddReference(str(dll_file))
+
+            # Import the DLL namespace
+            import SurugaSeiki.Motion  # type: ignore
 
             self._dll_module = SurugaSeiki.Motion
             logger.info("DLL loaded successfully")
-            logger.info(f"DLL Version: {SurugaSeiki.Motion.System.Instance.DllVersion}")
 
         except Exception as e:
             logger.error(f"Failed to load DLL: {e}")
@@ -157,7 +169,8 @@ class RealBackend(AbstractBackend):
 
             # Connection successful
             self._connected = True
-            logger.info(f"Connected to hardware. System version: {self._system.SystemVersion}")
+            logger.info(f"Connected to hardware. DLL version: {self._system.DllVersion}")
+            logger.info(f"System version: {self._system.SystemVersion}")
 
             # Turn on servo for all axes
             for axis_num, component in self._axis_components.items():
